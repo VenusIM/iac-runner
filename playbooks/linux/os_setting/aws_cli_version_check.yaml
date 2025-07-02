@@ -1,0 +1,23 @@
+---
+- name: Install AWS CLI version Check
+  hosts: all
+  gather_facts: no
+  become: yes
+  become_method: sudo
+
+  tasks:
+    - name: Check if AWS CLI is installed
+      shell: which aws
+      register: aws_cli
+      ignore_errors: true
+
+    - name: Get current AWS CLI version
+      shell: aws --version
+      register: aws_cli_version
+      when: aws_cli.rc == 0
+      changed_when: false
+
+    - name: Show AWS CLI version
+      debug:
+        msg: "AWS CLI version: {{ aws_cli_version.stdout }}"
+      when: aws_cli.rc == 0
